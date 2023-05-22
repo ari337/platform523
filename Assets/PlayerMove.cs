@@ -6,11 +6,18 @@ public class PlayerMove : MonoBehaviour
 {
     Rigidbody2D rigid;
     public float maxSpeed;
+    SpriteRenderer spriteRenderer;
+    Animator anim;
+
+
+
 
     private void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         rigid.freezeRotation = true;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
     }
     //즉각적인 키 입력, 키보드에 손을 뗐을때
     private void Update()
@@ -18,6 +25,21 @@ public class PlayerMove : MonoBehaviour
         if (Input.GetButtonUp("Horizontal"))
         {
             rigid.velocity = new Vector2(rigid.velocity.normalized.x * 0.5f, rigid.velocity.y);
+        }
+
+        if (Input.GetButtonUp("Horizontal"))
+        {
+            spriteRenderer.flipX = (Input.GetAxisRaw("Horizontal")==-1);
+        }
+
+        //애니메이션  멈추었을때
+        if(rigid.velocity.normalized.x == 0)
+        {
+            anim.SetBool("isWalk", false);
+        }
+        else
+        {
+            anim.SetBool("isWalk", true);
         }
     }
 
