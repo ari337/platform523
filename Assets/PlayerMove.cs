@@ -8,6 +8,8 @@ public class PlayerMove : MonoBehaviour
     public float maxSpeed;
     SpriteRenderer spriteRenderer;
     Animator anim;
+    //점프
+    public float jumpPower;
 
 
 
@@ -41,6 +43,12 @@ public class PlayerMove : MonoBehaviour
         {
             anim.SetBool("isWalk", true);
         }
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+            anim.SetBool("isJump", true);
+        }
     }
 
 
@@ -59,5 +67,25 @@ public class PlayerMove : MonoBehaviour
             rigid.velocity = new Vector2(maxSpeed * (-1), rigid.velocity.y);
 
         }
+        if (rigid.velocity.y < 0)
+        {
+            // 레이 캐스트
+            Debug.DrawRay(rigid.position, Vector3.down, new Color(0, 1, 0));
+
+            RaycastHit2D rayHit = Physics2D.Raycast(rigid.position, Vector3.down, 1,
+                      LayerMask.GetMask("Platform"));
+
+            //빔에 맞았는지
+
+            if (rayHit.collider != null)
+            {   //플레이어의 절반크기 만큼이여야 바닥에 닿은거
+                if (rayHit.distance < 0.5f)
+                {
+                    anim.SetBool("isJump", false);
+                    Debug.Log(rayHit.collider.name);
+                }
+            }
+        }
+       
     }
 }
