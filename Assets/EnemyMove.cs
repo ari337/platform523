@@ -6,9 +6,14 @@ public class EnemyMove : MonoBehaviour
 {
     Rigidbody2D rigid;
     public int nextMove;
+    Animator anim;
+    SpriteRenderer spriteRenderer;
+
     private void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         Invoke("Think", 4);
     }
 
@@ -22,16 +27,32 @@ public class EnemyMove : MonoBehaviour
         RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 1, LayerMask.GetMask("Platform"));
         if(rayHit.collider == null)
         {
-            //nextMove =nextMove*(-1);
-            //CancelInvoke();
-            //Invoke("Think", 4);
+            Turn();
         }
     }
 
     void Think()
     {
         nextMove=Random.Range(-1,2);
+        float nextThinkTime=Random.Range(2f,5f);
+        Invoke("Think", nextThinkTime); //재귀함수
 
-        Invoke("Think", 4); //재귀함수
+        anim.SetInteger("walkSpeed",nextMove);
+        
+        //방향 바꾸기(0일때는 굳이 바꿀 필요가 없어 조건문 사용
+        if(nextMove != 0)
+        {
+            spriteRenderer.flipX = (nextMove == 1);
+        }
+    }
+
+    void Turn()
+    {
+        nextMove=nextMove*(-1);
+        spriteRenderer.flipX = (nextMove == 1);
+
+        CancelInvoke();
+        Invoke("Think",2);
+        
     }
 }
