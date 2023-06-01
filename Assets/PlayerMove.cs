@@ -29,7 +29,7 @@ public class PlayerMove : MonoBehaviour
             rigid.velocity = new Vector2(rigid.velocity.normalized.x * 0.5f, rigid.velocity.y);
         }
 
-        if (Input.GetButtonUp("Horizontal"))
+        if (Input.GetButton("Horizontal"))
         {
             spriteRenderer.flipX = (Input.GetAxisRaw("Horizontal")==-1);
         }
@@ -92,10 +92,29 @@ public class PlayerMove : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "Enemy")
-        {
+        { //Attack
+            if (rigid.velocity.y < 0 && transform.position.y > collision.transform.position.y)
+            {
+                OnAttack(collision.transform);
+            
+            }
+            else //Damaged
             OnDamaged(collision.transform.position);
 
         }
+    }
+
+    void OnAttack(Transform enemy)
+    {
+        //Point
+
+        //리액션 Force
+        rigid.AddForce(Vector2.up * 5, ForceMode2D.Impulse);
+
+        //Enemy Die
+        EnemyMove enemyMove = enemy.GetComponent<EnemyMove>();
+        enemyMove.OnDamaged();  //몬스터 입장에선 공격 받는것
+
     }
 
     void OnDamaged(Vector2 targetPos)
@@ -106,5 +125,13 @@ public class PlayerMove : MonoBehaviour
         int dirc = transform.position.x - targetPos.x > 0 ? 1 : -1;
 
         rigid.AddForce(new Vector2(dirc, 1) * 7, ForceMode2D.Impulse);
+        Invoke("OffDamaged", 3);
     }
+
+    void OffDamaged()
+    {
+        gameObject.layer = 10;
+        spriteRenderer.color = new Color(1, 1, 1, 1);
+    }
+
 }

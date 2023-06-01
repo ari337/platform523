@@ -8,12 +8,14 @@ public class EnemyMove : MonoBehaviour
     public int nextMove;
     Animator anim;
     SpriteRenderer spriteRenderer;
+    CapsuleCollider2D capsuleCollider;
 
     private void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        capsuleCollider = GetComponent<CapsuleCollider2D>();
         Invoke("Think", 4);
     }
 
@@ -55,4 +57,25 @@ public class EnemyMove : MonoBehaviour
         Invoke("Think",2);
         
     }
+
+    public  void OnDamaged()
+    {
+        //스프라이트 알파값
+        spriteRenderer.color = new Color(1, 1, 1, 0.4f);
+        //스프라이트 반전 Flip
+        spriteRenderer.flipX = true;
+        //콜라이더 disable
+        capsuleCollider.enabled = false;  //비활성화
+        //Die effect Jump
+        rigid.AddForce(Vector2.up*5,ForceMode2D.Impulse);
+        //Destroy
+        Invoke("DeActive", 5);
+    }
+
+    void DeActive()
+    {
+        gameObject.SetActive(false);
+    }
+
+
 }
